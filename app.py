@@ -1,28 +1,37 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from forms import RegistrationForm, LoginForm
-# from pymongo import MongoClient
 from flask_mongoengine import MongoEngine
+from datetime import datetime
+from mongoengine import StringField, ReferenceField, ListField, EmailField, ImageField, DateTimeField
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'd5a2a902fe9f3fbadf29732b69ede5c8'
 app.config['MONGODB_SETTINGS'] = {
-    # 'db': 'flask_mongo_db',
     'host': 'mongodb+srv://xedriq:xedriq@cluster0-811so.mongodb.net/flask_mongo_db?retryWrites=true&w=majority'
 }
 db = MongoEngine(app)
 
 
 class User(db.Document):
-    username = db.StringField(
+    username = StringField(
         required=True, unique=True, min_length=2, max_length=20)
-    email = db.EmailField(required=True, unique=True)
-    password = db.StringField(required=True)
+    email = EmailField(required=True, unique=True)
+    image_file = ImageField(required=True, default='default.jpg')
+    password = StringField(required=True)
+    posts = ListField(ReferenceField('Post'))
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
 
-# client = MongoClient(
-#     'mongodb+srv://xedriq:xedriq@cluster0-811so.mongodb.net/test?retryWrites=true&w=majority')
-# db = client['flask_mongo_db']
-# usersCollection = db.users
+class Post(db.Document):
+    title = StringField(max_length=100)
+    date_posted = DateTimeField(required=True, default=datetime.utcnow)
+    content = StringField(required=True)
+    author = ReferenceField(User)
+
+    def __repr__(self):
+        return f"User('{self.title}', '{self.date_posted}')"
 
 
 posts = [
