@@ -1,13 +1,19 @@
 from datetime import datetime
 from mongoengine import StringField, ReferenceField, ListField, EmailField, ImageField, DateTimeField
-from app import db
+from app import db, login_manager
+from flask_login import UserMixin
 
 
-class User(db.Document):
+@login_manager.user_loader
+def load_user(user_id):
+    return User.objects(id=user_id).first()
+
+
+class User(db.Document, UserMixin):
     username = StringField(
         required=True, unique=True, min_length=2, max_length=20)
     email = EmailField(required=True, unique=True)
-    image_file = ImageField(required=True, default='default.jpg')
+    image_file = StringField(required=True, default='default.jpg')
     password = StringField(required=True)
     posts = ListField(ReferenceField('Post'))
 
