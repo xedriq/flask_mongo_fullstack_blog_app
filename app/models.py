@@ -23,3 +23,7 @@ class Post(db.Document):
 
     def __repr__(self):
         return f"User('{self.title}', '{self.date_posted}')"
+
+    meta = {
+        'ordering': ["-date_posted"]
+    }

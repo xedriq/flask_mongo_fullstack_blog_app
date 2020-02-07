@@ -23,6 +23,7 @@ posts = [
 @app.route('/')
 @app.route('/home')
 def home():
+    users = User.objects()
     return render_template('home.html', posts=posts, title='Home')
 
 
@@ -36,20 +37,25 @@ def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(
+            form.password.data).decode('utf-8')
 
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        new_user.save()
+        new_user = User(username=form.username.data,
+                        email=form.email.data, password=hashed_password)
+        try:
+            new_user.save()
+            flash(f'Account created. You can now log in!', 'success')
+            return redirect(url_for('login'))
+        except:
+            flash(f'username and/or email is taken.', 'warning')
 
-        flash(f'Account created. You can now log in!', 'success')
-        return redirect(url_for('login'))
-        
     return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     form = LoginForm()
+
     if form.validate_on_submit():
         if form.email.data == 'cedrick@email.com' and form.password.data == 'pass':
             flash(f'Welcome to your dashboard!', 'success')
