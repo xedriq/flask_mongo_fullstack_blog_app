@@ -12,7 +12,13 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route('/')
 @app.route('/home')
 def home():
-    posts = Post.objects()
+    page = request.args.get('page', 1, type=int)
+    # items_per_page = 1
+    # page_nb = page
+    # offset = (page_nb - 1) * items_per_page
+    # posts = Post.objects.skip(offset).limit(items_per_page)
+    # posts = Post.objects()
+    posts = Post.objects.paginate(page=page, per_page=5)
     return render_template('home.html', posts=posts, title='Home')
 
 
@@ -163,6 +169,7 @@ def update_post(id):
         form.content.data = post.content
 
     return render_template('create_post.html', title='Update Post', form=form, is_updating=True)
+
 
 @app.route('/post/<string:id>/delete', methods=['POST'])
 @login_required
