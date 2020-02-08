@@ -184,3 +184,17 @@ def delete_post(id):
 
     if post.author.id != current_user.id:
         abort(403)
+
+
+@app.route('/user/<string:username>')
+def user_posts(username):
+    page = request.args.get('page', 1, type=int)
+    # items_per_page = 1
+    # page_nb = page
+    # offset = (page_nb - 1) * items_per_page
+    # posts = Post.objects.skip(offset).limit(items_per_page)
+    # posts = Post.objects()
+    user = User.objects(username=username).first_or_404()
+    posts = Post.objects(author=user.id).paginate(page=page, per_page=5)
+    posts_count = Post.objects(author=user.id).count()
+    return render_template('user_post.html', posts=posts, title='Home', user=user, posts_count=posts_count)
