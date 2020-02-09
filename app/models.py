@@ -15,16 +15,7 @@ class UserCustomQuerySet(db.QuerySet):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)
         return s.dumps({'user_id': str(self[0].id)}).decode('utf-8')
 
-    @staticmethod
-    def verify_reset_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
-
-        try:
-            user_id = s.loads(token)['user_id']
-        except:
-            return None
-
-        return User.objects(id=user_id)
+    
 
 
 class User(db.Document, UserMixin):
@@ -40,6 +31,16 @@ class User(db.Document, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+
+        return User.objects(id=user_id).get()
 
 class Post(db.Document):
     title = StringField(max_length=100)
