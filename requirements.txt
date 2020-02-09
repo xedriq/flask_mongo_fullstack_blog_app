@@ -1,6 +1,7 @@
 astroid==2.3.3
 autopep8==1.5
 bcrypt==3.1.7
+blinker==1.4
 cffi==1.13.2
 Click==7.0
 colorama==0.4.3
@@ -8,6 +9,7 @@ dnspython==1.16.0
 Flask==1.1.1
 Flask-Bcrypt==0.7.1
 Flask-Login==0.4.1
+Flask-Mail==0.9.1
 flask-mongoengine==0.9.5
 Flask-WTF==0.14.2
 get==2019.4.13
